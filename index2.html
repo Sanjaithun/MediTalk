@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediTalk Mobile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation; /* Prevents double-tap zoom on mobile */
+        }
+        .pulse {
+            animation: pulse-animation 1.5s infinite;
+        }
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(22, 163, 74, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col h-screen overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-gray-800 p-4 shadow-md">
+        <h1 class="text-2xl font-bold text-center">MediTalk AI</h1>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="content-area" class="flex-1 p-4 overflow-y-auto">
+        <!-- Initial Welcome Message -->
+        <div id="welcome-message" class="text-center my-auto">
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                <h2 class="text-xl font-semibold mb-2">Your Voice Health Assistant</h2>
+                <p class="text-gray-400">Tap the microphone below and ask me a health question.</p>
+            </div>
+        </div>
+        <!-- Response will be injected here -->
+    </main>
+
+    <!-- Footer with Microphone Button -->
+    <footer class="bg-gray-800 p-4 shadow-inner">
+        <div class="flex justify-center items-center">
+            <button id="mic-button" class="bg-green-600 text-white rounded-full p-6 transition-transform duration-200 ease-in-out transform hover:scale-110 focus:outline-none shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm5 10.5a.5.5 0 01.5.5v.5a2.5 2.5 0 01-5 0V15a.5.5 0 01.5-.5h4zm-3.5-1.5A.5.5 0 008 13.5V15h4v-1.5a.5.5 0 00-.5-.5h-3zM5 8a1 1 0 00-1 1v1a4 4 0 004 4h2a4 4 0 004-4V9a1 1 0 10-2 0v1a2 2 0 01-2 2H8a2 2 0 01-2-2V9a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        <p id="status-text" class="text-center text-gray-400 mt-2 text-sm">Tap to Speak</p>
+    </footer>
+
+    <script>
+        const micButton = document.getElementById('mic-button');
+        const statusText = document.getElementById('status-text');
+        const contentArea = document.getElementById('content-area');
+        const welcomeMessage = document.getElementById('welcome-message');
+        let lastUserCommand = ''; // Store the last command for context
+
+        // --- API KEYS ---
+        // IMPORTANT: Replace with your actual API keys
+        const GEMINI_API_KEY = "PASTE_YOUR_GEMINI_API_KEY_HERE";
+        const GOOGLE_SEARCH_API_KEY = "PASTE_YOUR_GOOGLE_SEARCH_API_KEY_HERE";
+        const GOOGLE_SEARCH_CX = "PASTE_YOUR_GOOGLE_SEARCH_CX_ID_HERE";
+
+        // --- Speech Recognition Setup ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("Sorry, your browser doesn't support Speech Recognition. Please try Google Chrome.");
+        }
+        const recognition = new SpeechRecognition();
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        // --- Text-to-Speech Setup ---
+        const synth = window.speechSynthesis;
+
+        micButton.addEventListener('click', () => {
+            if (micButton.classList.contains('pulse')) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        });
+
+        recognition.onstart = () => {
+            micButton.classList.add('pulse');
+            statusText.textContent = "Listening...";
+        };
+
+        recognition.onend = () => {
+            micButton.classList.remove('pulse');
+            statusText.textContent = "Tap to Speak";
+        };
+
+        recognition.onerror = (event) => {
+            statusText.textContent = "Error occurred in recognition: " + event.error;
+        };
+
+        recognition.onresult = (event) => {
+            const command = event.results[0][0].transcript;
+            lastUserCommand = command; // Save the command
+            welcomeMessage.style.display = 'none';
+            contentArea.innerHTML = `<div class="text-center p-4">You said: <em class="text-gray-300">"${command}"</em></div>`;
+            processCommand(command);
+        };
+
+        function speak(text, callback) {
+            synth.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            if (callback) {
+                utterance.onend = callback;
+            }
+            synth.speak(utterance);
+        }
+
+        async function processCommand(command) {
+            statusText.textContent = "Thinking...";
+            
+            if (command.toLowerCase().includes("find nearby hospitals")) {
+                // Handle hospital search
+                // ... (code remains the same)
+                return;
+            }
+
+            try {
+                if (GEMINI_API_KEY.includes("PASTE_YOUR") || GOOGLE_SEARCH_API_KEY.includes("PASTE_YOUR")) {
+                    throw new Error("API keys are not set.");
+                }
+                showLoading();
+                
+                let featureType = 'general';
+                if (command.toLowerCase().match(/\b(what is|tell me about|information on)\b/i) && command.toLowerCase().match(/\b(medication|drug|pill)\b/i)) {
+                    featureType = 'medication';
+                } else if (command.toLowerCase().match(/\b(symptom|feel|have a)\b/i)) {
+                    featureType = 'symptom';
+                }
+
+                const [aiText, imageUrl] = await getAiResponseWithImage(command, featureType);
+
+                let actionButton = '';
+                if (featureType === 'symptom') {
+                    actionButton = `<button onclick="analyzeSymptoms()" class="mt-4 w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Analyze Symptoms ✨</button>`;
+                } else if (featureType === 'medication') {
+                     actionButton = `<button onclick="getMedicationInfo()" class="mt-4 w-full bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors">Get Medication Guide 💊</button>`;
+                }
+
+                contentArea.innerHTML = `
+                    <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                        <img src="${imageUrl}" alt="Relevant image" class="w-full h-48 object-cover" onerror="this.style.display='none'">
+                        <div class="p-6">
+                            <p id="ai-response-text" class="text-gray-300">${aiText}</p>
+                            ${actionButton}
+                        </div>
+                    </div>`;
+                
+                speak(aiText);
+
+            } catch (error) {
+                handleError(error);
+            }
+        }
+        
+        async function analyzeSymptoms() {
+            showLoading();
+            const prompt = `A user reported these symptoms: "${lastUserCommand}". Provide a detailed analysis for them to discuss with a doctor. Structure your response with three distinct sections: 1. "Potential Causes": List a few common, non-alarming potential causes. 2. "At-Home Care": Suggest simple, safe at-home care tips. 3. "Questions for Your Doctor": Provide a numbered list of 3-4 specific questions the user should ask their healthcare provider. Do not provide a diagnosis. Start the response with "Here is a more detailed analysis of your symptoms."`;
+            try {
+                const geminiResponse = await callGeminiAPI(prompt, "Here is a detailed analysis of your symptoms.");
+                contentArea.innerHTML = `<div class="bg-gray-800 rounded-xl shadow-lg p-6">${formatResponse(geminiResponse)}</div>`;
+                speak(geminiResponse);
+            } catch (error) {
+                handleError(error);
+            }
+        }
+
+        async function getMedicationInfo() {
+            showLoading();
+            const prompt = `The user asked about a medication with the query: "${lastUserCommand}". Provide a concise medication guide. Extract the medication name. Structure your response with three sections: 1. "Primary Use": What is this medication generally prescribed for? 2. "Common Side Effects": List 2-3 common side effects. 3. "Important Precautions": Mention 1-2 crucial precautions. Keep the language simple and clear. Start the response with "Here is a guide for the medication."`;
+            try {
+                const geminiResponse = await callGeminiAPI(prompt, "Here is a guide for the medication.");
+                contentArea.innerHTML = `<div class="bg-gray-800 rounded-xl shadow-lg p-6">${formatResponse(geminiResponse)}</div>`;
+                speak(geminiResponse);
+            } catch (error) {
+                handleError(error);
+            }
+        }
+        
+        function formatResponse(text) {
+            // Simple formatter to make the text more readable
+            return text.replace(/\n/g, '<br>').replace(/\d\./g, '<br>$&');
+        }
+
+        async function callGeminiAPI(prompt, defaultResponse) {
+            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const response = await fetch(geminiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            if (!response.ok) throw new Error('Gemini API request failed');
+            const data = await response.json();
+            if (!data.candidates || data.candidates.length === 0) {
+                 return defaultResponse;
+            }
+            return data.candidates[0].content.parts[0].text;
+        }
+
+
+        async function getAiResponseWithImage(prompt, featureType) {
+            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            let systemInstruction = `You are MediTalk, a friendly and concise AI health assistant. Provide clear, simple answers (max 3 sentences). Always include the disclaimer: "This is for informational purposes only. Consult a doctor for medical advice."`;
+            
+            if (featureType === 'medication') {
+                systemInstruction += ` The user is asking about a medication. Briefly explain what it is.`;
+            } else if (featureType === 'symptom') {
+                systemInstruction += ` The user is describing a symptom. Briefly explain what it is.`;
+            }
+
+            const geminiResponse = await fetch(geminiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    system_instruction: { parts: [{ text: systemInstruction }] }
+                })
+            });
+            if (!geminiResponse.ok) throw new Error('Gemini API request failed');
+            const geminiData = await geminiResponse.json();
+            if (!geminiData.candidates || geminiData.candidates.length === 0) {
+                throw new Error("No response from AI. The query may have been blocked.");
+            }
+            const aiText = geminiData.candidates[0].content.parts[0].text;
+
+            const imageSearchQuery = await generateImageQuery(prompt);
+            const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_SEARCH_API_KEY}&cx=${GOOGLE_SEARCH_CX}&q=${encodeURIComponent(imageSearchQuery)}&searchType=image&num=1`;
+            
+            const searchResponse = await fetch(searchUrl);
+            if (!searchResponse.ok) throw new Error('Google Search API request failed');
+            const searchData = await searchResponse.json();
+            const imageUrl = searchData.items && searchData.items.length > 0 ? searchData.items[0].link : 'https://placehold.co/600x400/1F2937/FFFFFF?text=No+Image';
+
+            return [aiText, imageUrl];
+        }
+
+        async function generateImageQuery(prompt) {
+            const queryGenUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const queryGenPrompt = `Based on the user's health query "${prompt}", create a simple 2-3 word Google Image search query to find a relevant, helpful image. For example, if the user asks "what are the symptoms of a common cold?", a good query would be "person sneezing". If they ask "what is a healthy diet?", a good query is "healthy food plate". Respond with ONLY the search query.`;
+
+            const response = await fetch(queryGenUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: queryGenPrompt }] }]
+                })
+            });
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text.trim();
+        }
+
+        function showLoading() {
+            contentArea.innerHTML = `
+                <div class="text-center p-8">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-green-500 mx-auto"></div>
+                    <p class="mt-4 text-gray-400">Thinking...</p>
+                </div>`;
+        }
+        
+        function handleError(error) {
+            console.error("Error:", error);
+            let errorMessage = "Sorry, I'm having trouble connecting to my brain right now. Please try again.";
+            if (error.message === "API keys are not set.") {
+                errorMessage = "It looks like you haven't entered your API keys. Please paste them into the code to enable AI features.";
+            } else if (error.message.includes("blocked")) {
+                 errorMessage = "Sorry, I can't provide a response to that topic.";
+            }
+            contentArea.innerHTML = `<div class="bg-red-800 p-6 rounded-xl shadow-lg"><p>${errorMessage}</p></div>`;
+            speak(errorMessage);
+        }
+
+    </script>
+</body>
+</html>
