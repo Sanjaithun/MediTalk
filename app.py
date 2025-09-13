@@ -270,3 +270,7 @@ if __name__ == "__main__":
 #             result = process_command(user_command)
 #             if result == "exit":
 #                 break
+
+# const GEMINI_API_KEY = "AIzaSyADhFxYOJG-PpymgfPlzxhlCBQ5XvpZm7I";
+# const GOOGLE_SEARCH_API_KEY = "AIzaSyCVMVTJwLvSC7XJjTMuh1XpOiCJht8QbTg";
+# const GOOGLE_SEARCH_CX = "149fc2eb221274d84";
