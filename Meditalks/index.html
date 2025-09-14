@@ -19,14 +19,9 @@
             --border-color: rgba(255, 255, 255, 0.2);
         }
         html[data-theme="light"] {
-            --bg-primary: #f9fafb; --bg-secondary: #ffffff; --bg-glass: rgba(255, 255, 255, 0.7);
+            --bg-primary: #f3f4f6; --bg-secondary: #ffffff; --bg-glass: rgba(255, 255, 255, 0.7);
             --text-primary: #111827; --text-secondary: #4b5563; --accent-color: #3b82f6;
             --border-color: rgba(0, 0, 0, 0.1);
-        }
-        html[data-theme="orange"] {
-            --bg-primary: #2d1e16; --bg-secondary: #422a1f; --bg-glass: rgba(66, 42, 31, 0.5);
-            --text-primary: #ffedd5; --text-secondary: #fed7aa; --accent-color: #f97316;
-            --border-color: rgba(249, 115, 22, 0.3);
         }
         body {
             font-family: 'Inter', sans-serif; background-color: var(--bg-primary); color: var(--text-primary);
@@ -39,48 +34,44 @@
         .nav-button.active { background-color: var(--accent-color); color: white; }
         .pulse { animation: pulse-animation 1.5s infinite; }
         @keyframes pulse-animation {
-            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
-            70% { box-shadow: 0 0 0 25px rgba(249, 115, 22, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { box-shadow: 0 0 0 25px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
         }
-        /* Styles for the AI response headings */
         .ai-response-content h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-top: 0.75rem;
-            margin-bottom: 0.25rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.25rem;
+            font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-top: 0.75rem;
+            margin-bottom: 0.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem;
         }
-         .ai-response-content h3:first-child {
-            margin-top: 0;
-        }
+         .ai-response-content h3:first-child { margin-top: 0; }
     </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col">
 
     <header class="flex-shrink-0 glass-card flex justify-between items-center p-3 md:p-4 shadow-md z-20">
         <h1 class="text-xl md:text-2xl font-bold">MediTalk AI</h1>
-        <div class="flex items-center space-x-2 md:space-x-4">
-            <div class="flex items-center space-x-2 glass-card rounded-full p-1 text-sm">
-                <button id="lang-en-btn" class="px-3 py-1 rounded-full">EN</button>
-                <button id="lang-ta-btn" class="px-3 py-1 rounded-full">தமிழ்</button>
+        <div class="flex items-center space-x-2 md:space-x-3">
+            <div id="language-switcher" class="flex items-center space-x-1 glass-card rounded-full p-1 text-xs md:text-sm">
+                <button class="lang-btn px-2 py-1 rounded-full" data-lang="en">EN</button>
+                <button class="lang-btn px-2 py-1 rounded-full" data-lang="ta">தமிழ்</button>
+                <button class="lang-btn px-2 py-1 rounded-full" data-lang="te">తెలుగు</button>
+                <button class="lang-btn px-2 py-1 rounded-full" data-lang="hi">हिन्दी</button>
             </div>
-            <div class="flex items-center space-x-1 glass-card rounded-full p-1">
-                <button class="theme-btn w-6 h-6 rounded-full bg-gray-800 border-2 border-[var(--border-color)]" data-theme="dark"></button>
-                <button class="theme-btn w-6 h-6 rounded-full bg-white border-2 border-[var(--border-color)]" data-theme="light"></button>
-                <button class="theme-btn w-6 h-6 rounded-full bg-orange-500 border-2 border-[var(--border-color)]" data-theme="orange"></button>
+            <div class="flex items-center space-x-2 glass-card rounded-full p-1">
+                <button class="theme-btn w-6 h-6 rounded-full bg-gray-800 border-2" data-theme="dark"></button>
+                <button class="theme-btn w-6 h-6 rounded-full bg-white border-2" data-theme="light"></button>
             </div>
+            <button id="voice-toggle-btn" class="glass-card rounded-full w-8 h-8 flex items-center justify-center">
+                <i id="voice-icon" class="fas fa-volume-up"></i>
+            </button>
         </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden">
         <aside class="hidden md:flex flex-col w-64 bg-[var(--bg-secondary)] p-4 space-y-2">
-            <button onclick="showPage('symptom-checker')" class="nav-button flex items-center space-x-3 p-3 rounded-lg hover:bg-[var(--accent-color)] transition-colors"><i class="fas fa-comments w-5"></i><span data-translate-key="nav_symptom_checker">Symptom Checker</span></button>
-            <button onclick="showPage('health-hub')" class="nav-button flex items-center space-x-3 p-3 rounded-lg hover:bg-[var(--accent-color)] transition-colors"><i class="fas fa-book-medical w-5"></i><span data-translate-key="nav_health_hub">Health Hub</span></button>
-            <button onclick="showPage('hospitals')" class="nav-button flex items-center space-x-3 p-3 rounded-lg hover:bg-[var(--accent-color)] transition-colors"><i class="fas fa-hospital w-5"></i><span data-translate-key="nav_hospitals">Nearby Hospitals</span></button>
-            <button onclick="showPage('first-aid')" class="nav-button flex items-center space-x-3 p-3 rounded-lg hover:bg-[var(--accent-color)] transition-colors"><i class="fas fa-briefcase-medical w-5"></i><span data-translate-key="nav_first_aid">First Aid</span></button>
+            <button onclick="showPage('symptom-checker')" class="nav-button flex items-center space-x-3 p-3 rounded-lg"><i class="fas fa-comments w-5"></i><span data-translate-key="nav_symptom_checker">Symptom Checker</span></button>
+            <button onclick="showPage('health-hub')" class="nav-button flex items-center space-x-3 p-3 rounded-lg"><i class="fas fa-book-medical w-5"></i><span data-translate-key="nav_health_hub">Health Hub</span></button>
+            <button onclick="showPage('hospitals')" class="nav-button flex items-center space-x-3 p-3 rounded-lg"><i class="fas fa-hospital w-5"></i><span data-translate-key="nav_hospitals">Nearby Hospitals</span></button>
+            <button onclick="showPage('first-aid')" class="nav-button flex items-center space-x-3 p-3 rounded-lg"><i class="fas fa-briefcase-medical w-5"></i><span data-translate-key="nav_first_aid">First Aid</span></button>
             <div class="flex-grow"></div>
             <div class="text-center text-xs text-[var(--text-secondary)] py-2" data-translate-key="footer_powered_by">
                 Powered by Sanjaithun
@@ -95,7 +86,7 @@
                         <div class="inline-block glass-card p-6 rounded-xl shadow-lg">
                             <i class="fas fa-robot text-4xl text-[var(--accent-color)] mb-4"></i>
                             <h2 class="text-xl font-semibold mb-2" data-translate-key="welcome_title">Your AI Health Companion</h2>
-                            <p class="text-[var(--text-secondary)]" data-translate-key="welcome_subtitle">Tap the microphone and ask about your health.</p>
+                            <p class="text-sm text-[var(--text-secondary)]" data-translate-key="welcome_subtitle">Tap the microphone and ask about your health.</p>
                         </div>
                     </div>
                 </div>
@@ -106,66 +97,54 @@
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
-                    <button id="mic-button" class="bg-[var(--accent-color)] text-white rounded-full w-12 h-12 flex items-center justify-center transition-transform duration-300 hover:scale-110 shadow-lg">
+                    <button id="mic-button" class="bg-[var(--accent-color)] text-white rounded-full w-12 h-12 flex-shrink-0 flex items-center justify-center transition-transform duration-300 hover:scale-110 shadow-lg">
                         <i id="mic-icon" class="fas fa-microphone-alt text-xl"></i>
                     </button>
                 </footer>
-                <p id="status-text" class="text-center text-[var(--text-secondary)] text-sm pb-2" data-translate-key="status_tap_to_speak">Tap to Speak or Type a Message</p>
+                <p id="status-text" class="text-center text-[var(--text-secondary)] text-xs md:text-sm pb-2" data-translate-key="status_tap_to_speak">Tap to Speak or Type a Message</p>
             </div>
 
-            <div id="health-hub-page" class="page-content hidden">
-                 <h2 class="text-3xl font-bold mb-4 px-2" data-translate-key="hub_title">Health Hub</h2>
-                 <div class="glass-card p-4 md:p-6 rounded-lg space-y-4 text-[var(--text-secondary)]">
-                    <p><strong class="text-[var(--text-primary)]" data-translate-key="hub_reco_title">Recommendations:</strong> <span data-translate-key="hub_reco_text">Eat a balanced diet, exercise regularly for 30 minutes, and get 7-8 hours of sleep.</span></p>
-                    <p><strong class="text-[var(--text-primary)]" data-translate-key="hub_sol_title">Solutions:</strong> <span data-translate-key="hub_sol_text">For common headaches, stay hydrated and rest. For stress, try deep breathing or meditation.</span></p>
-                    <p><strong class="text-[var(--text-primary)]" data-translate-key="hub_sugg_title">Suggestions:</strong> <span data-translate-key="hub_sugg_text">Consider annual health check-ups to monitor your wellness and prevent potential issues.</span></p>
+            <div id="health-hub-page" class="page-content hidden text-sm md:text-base">
+                 <h2 class="text-2xl md:text-3xl font-bold mb-4 px-2" data-translate-key="hub_title">Health Hub</h2>
+                 <div class="glass-card p-4 md:p-6 rounded-lg space-y-3 text-[var(--text-secondary)]">
+                    <p data-translate-key="hub_tip_1"></p><p data-translate-key="hub_tip_2"></p><p data-translate-key="hub_tip_3"></p>
+                    <p data-translate-key="hub_tip_4"></p><p data-translate-key="hub_tip_5"></p><p data-translate-key="hub_tip_6"></p>
+                    <p data-translate-key="hub_tip_7"></p><p data-translate-key="hub_tip_8"></p>
                  </div>
             </div>
 
             <div id="hospitals-page" class="page-content hidden text-center">
-                <h2 class="text-3xl font-bold mb-4" data-translate-key="hospitals_title">Find Nearby Hospitals</h2>
+                <h2 class="text-2xl md:text-3xl font-bold mb-4" data-translate-key="hospitals_title">Find Nearby Hospitals</h2>
                 <button id="find-hospitals-btn" class="bg-[var(--accent-color)] px-6 py-3 rounded-lg text-lg hover:opacity-80 transition-opacity">
                     <i class="fas fa-search-location mr-2"></i><span data-translate-key="hospitals_button">Search Using My Location</span>
                 </button>
                 <div id="hospitals-list" class="mt-6 text-left max-w-2xl mx-auto space-y-3"></div>
             </div>
 
-            <div id="first-aid-page" class="page-content hidden">
-                <h2 class="text-3xl font-bold mb-4 px-2" data-translate-key="first_aid_title">Emergency First Aid</h2>
+            <div id="first-aid-page" class="page-content hidden text-sm md:text-base">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4 px-2" data-translate-key="first_aid_title">Emergency First Aid</h2>
                 <div class="space-y-3">
-                    <div class="glass-card rounded-lg overflow-hidden">
-                        <button class="accordion-header w-full text-left p-4 font-semibold flex justify-between items-center">
-                            <span data-translate-key="first_aid_cuts_title">Cuts and Scrapes</span><i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="accordion-content hidden p-4 border-t border-[var(--border-color)]">
-                            <p data-translate-key="first_aid_cuts_text">1. Stop the bleeding by applying pressure. 2. Clean the wound with water. 3. Apply an antiseptic and cover with a bandage.</p>
-                        </div>
-                    </div>
-                    <div class="glass-card rounded-lg overflow-hidden">
-                        <button class="accordion-header w-full text-left p-4 font-semibold flex justify-between items-center">
-                           <span data-translate-key="first_aid_burns_title">Minor Burns</span><i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="accordion-content hidden p-4 border-t border-[var(--border-color)]">
-                            <p data-translate-key="first_aid_burns_text">1. Cool the burn under cool running water for 10-15 minutes. 2. Do not use ice. 3. Cover loosely with a sterile gauze bandage.</p>
-                        </div>
-                    </div>
+                    <div class="glass-card rounded-lg overflow-hidden"><button class="accordion-header w-full text-left p-4 font-semibold flex justify-between items-center"><span data-translate-key="first_aid_cuts_title"></span><i class="fas fa-chevron-down"></i></button><div class="accordion-content hidden p-4 border-t border-[var(--border-color)]"><p data-translate-key="first_aid_cuts_text"></p></div></div>
+                    <div class="glass-card rounded-lg overflow-hidden"><button class="accordion-header w-full text-left p-4 font-semibold flex justify-between items-center"><span data-translate-key="first_aid_burns_title"></span><i class="fas fa-chevron-down"></i></button><div class="accordion-content hidden p-4 border-t border-[var(--border-color)]"><p data-translate-key="first_aid_burns_text"></p></div></div>
+                    <div class="glass-card rounded-lg overflow-hidden"><button class="accordion-header w-full text-left p-4 font-semibold flex justify-between items-center"><span data-translate-key="first_aid_sprains_title"></span><i class="fas fa-chevron-down"></i></button><div class="accordion-content hidden p-4 border-t border-[var(--border-color)]"><p data-translate-key="first_aid_sprains_text"></p></div></div>
+                    <div class="glass-card rounded-lg overflow-hidden"><button class="accordion-header w-full text-left p-4 font-semibold flex justify-between items-center"><span data-translate-key="first_aid_insects_title"></span><i class="fas fa-chevron-down"></i></button><div class="accordion-content hidden p-4 border-t border-[var(--border-color)]"><p data-translate-key="first_aid_insects_text"></p></div></div>
                 </div>
             </div>
         </main>
     </div>
 
     <nav class="md:hidden flex-shrink-0 glass-card flex justify-around items-center p-2 z-20">
-        <button onclick="showPage('symptom-checker')" class="nav-button flex flex-col items-center w-1/4 p-2 rounded-lg text-xs"><i class="fas fa-comments text-xl mb-1"></i><span data-translate-key="nav_symptom_checker">Checker</span></button>
-        <button onclick="showPage('health-hub')" class="nav-button flex flex-col items-center w-1/4 p-2 rounded-lg text-xs"><i class="fas fa-book-medical text-xl mb-1"></i><span data-translate-key="nav_health_hub_mobile">Hub</span></button>
-        <button onclick="showPage('hospitals')" class="nav-button flex flex-col items-center w-1/4 p-2 rounded-lg text-xs"><i class="fas fa-hospital text-xl mb-1"></i><span data-translate-key="nav_hospitals_mobile">Hospitals</span></button>
-        <button onclick="showPage('first-aid')" class="nav-button flex flex-col items-center w-1/4 p-2 rounded-lg text-xs"><i class="fas fa-briefcase-medical text-xl mb-1"></i><span data-translate-key="nav_first_aid_mobile">First Aid</span></button>
+        <button onclick="showPage('symptom-checker')" class="nav-button flex flex-col items-center w-1/4 p-2 rounded-lg text-xs"><i class="fas fa-comments text-xl mb-1"></i><span data-translate-key="nav_symptom_checker_mobile"></span></button>
+        <button onclick="showPage('health-hub')" class="nav-button flex flex-col items-center w-1/4 p-2 rounded-lg text-xs"><i class="fas fa-book-medical text-xl mb-1"></i><span data-translate-key="nav_health_hub_mobile"></span></button>
+        <button onclick="showPage('hospitals')" class="nav-button flex flex-col items-center w-1/4 p-2 rounded-lg text-xs"><i class="fas fa-hospital text-xl mb-1"></i><span data-translate-key="nav_hospitals_mobile"></span></button>
+        <button onclick="showPage('first-aid')" class="nav-button flex flex-col items-center w-1/4 p-2 rounded-lg text-xs"><i class="fas fa-briefcase-medical text-xl mb-1"></i><span data-translate-key="nav_first_aid_mobile"></span></button>
     </nav>
     
 <script>
 // ===================================================================================
 // ===== API KEYS & CONFIGURATION ====================================================
 // ===================================================================================
-const GEMINI_API_KEY = "AIzaSyADhFxYOJG-PpymgfPlzxhlCBQ5XvpZm7I";
+const GEMINI_API_KEY = "AIzaSyB37X1rZjhZowsSciy0st0MKRY8_CNRdq0";
 const GOOGLE_MAPS_API_KEY = "AIzaSyAI65dbzKDLgbzjWjoXbSMhVCnjFtYWx7A";
 const GOOGLE_SEARCH_API_KEY = "AIzaSyCVMVTJwLvSC7XJjTMuh1XpOiCJht8QbTg";
 const GOOGLE_SEARCH_CX = "149fc2eb221274d84";
@@ -174,7 +153,6 @@ const GOOGLE_SEARCH_CX = "149fc2eb221274d84";
 document.addEventListener('DOMContentLoaded', () => {
     // --- Element Selectors ---
     const micButton = document.getElementById('mic-button');
-    const micIcon = document.getElementById('mic-icon');
     const statusText = document.getElementById('status-text');
     const chatArea = document.getElementById('chat-area');
     const welcomeMessage = document.getElementById('welcome-message');
@@ -182,79 +160,62 @@ document.addEventListener('DOMContentLoaded', () => {
     const hospitalsList = document.getElementById('hospitals-list');
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
+    const voiceToggleBtn = document.getElementById('voice-toggle-btn');
+    const voiceIcon = document.getElementById('voice-icon');
 
     // --- State Variables ---
     let isListening = false;
     let currentLang = localStorage.getItem('meditalk_lang') || 'en';
     let currentTheme = localStorage.getItem('meditalk_theme') || 'dark';
+    let isVoiceEnabled = localStorage.getItem('meditalk_voice') !== 'false';
 
-    // --- Translations Object ---
+    // --- Translations ---
     const translations = {
         en: {
-            nav_symptom_checker: "Symptom Checker", nav_health_hub: "Health Hub", nav_hospitals: "Nearby Hospitals",
-            nav_first_aid: "First Aid", nav_health_hub_mobile: "Hub", nav_hospitals_mobile: "Hospitals",
-            nav_first_aid_mobile: "First Aid", welcome_title: "Your AI Health Companion",
-            welcome_subtitle: "Tap the microphone and ask about your health.", status_tap_to_speak: "Tap to Speak or Type a Message",
-            status_listening: "Listening...", status_thinking: "Thinking...", status_error: "Error", hub_title: "Health Hub",
-            hub_reco_title: "Recommendations:", hub_reco_text: "Eat a balanced diet, exercise regularly for 30 minutes, and get 7-8 hours of sleep.",
-            hub_sol_title: "Solutions:", hub_sol_text: "For common headaches, stay hydrated and rest. For stress, try deep breathing or meditation.",
-            hub_sugg_title: "Suggestions:", hub_sugg_text: "Consider annual health check-ups to monitor your wellness and prevent potential issues.",
-            hospitals_title: "Find Nearby Hospitals", hospitals_button: "Search Using My Location", first_aid_title: "Emergency First Aid",
-            first_aid_cuts_title: "Cuts and Scrapes", first_aid_cuts_text: "1. Stop the bleeding by applying pressure. 2. Clean the wound with water. 3. Apply an antiseptic and cover with a bandage.",
-            first_aid_burns_title: "Minor Burns", first_aid_burns_text: "1. Cool the burn under cool running water for 10-15 minutes. 2. Do not use ice. 3. Cover loosely with a sterile gauze bandage.",
-            footer_powered_by: "Powered by Sanjaithun"
+            nav_symptom_checker: "Symptom Checker", nav_symptom_checker_mobile: "Checker", nav_health_hub: "Health Hub", nav_health_hub_mobile: "Hub", nav_hospitals: "Nearby Hospitals", nav_hospitals_mobile: "Hospitals", nav_first_aid: "First Aid", nav_first_aid_mobile: "First Aid", welcome_title: "Your AI Health Companion", welcome_subtitle: "Tap the microphone and ask about your health.", status_tap_to_speak: "Tap to Speak or Type a Message", status_listening: "Listening...", status_thinking: "Thinking...", hub_title: "Health Hub", hospitals_title: "Find Nearby Hospitals", hospitals_button: "Search Using My Location", hospitals_searching: "Searching for hospitals...", hospitals_none_found: "No hospitals found nearby.", hospitals_error: "Could not fetch hospital data.", hospitals_denied: "Location access denied.", first_aid_title: "Emergency First Aid", first_aid_cuts_title: "Cuts & Scrapes", first_aid_burns_title: "Minor Burns", first_aid_sprains_title: "Sprains", first_aid_insects_title: "Insect Bites", first_aid_cuts_text: "1. Stop bleeding by applying firm pressure. 2. Clean the wound with water. 3. Apply an antiseptic and cover with a sterile bandage.", first_aid_burns_text: "1. Cool the burn under cool running water for 10+ minutes. 2. Do not use ice. 3. Cover loosely with a sterile bandage.", first_aid_sprains_text: "Follow R.I.C.E: Rest the injured area, Ice for 20 minutes at a time, Compress with a bandage, and Elevate the limb.", first_aid_insects_text: "1. Remove the stinger if present. 2. Wash the area with soap and water. 3. Apply a cold compress to reduce swelling.", footer_powered_by: "Powered by Sanjaithun", hub_tip_1: "<strong>Stay Hydrated:</strong> Drink at least 8 glasses of water a day.", hub_tip_2: "<strong>Balanced Diet:</strong> Include a variety of fruits, vegetables, lean proteins, and whole grains.", hub_tip_3: "<strong>Regular Exercise:</strong> Aim for 30 minutes of moderate activity most days.", hub_tip_4: "<strong>Quality Sleep:</strong> Ensure you get 7-9 hours of sleep per night.", hub_tip_5: "<strong>Manage Stress:</strong> Practice relaxation techniques like deep breathing or meditation.", hub_tip_6: "<strong>Good Hygiene:</strong> Wash your hands regularly to prevent infections.", hub_tip_7: "<strong>Limit Screen Time:</strong> Take regular breaks from screens to reduce eye strain.", hub_tip_8: "<strong>Regular Check-ups:</strong> Visit a doctor for routine check-ups, not just when you are sick."
         },
         ta: {
-            nav_symptom_checker: "அறிகுறி சரிபார்ப்பு", nav_health_hub: "சுகாதார மையம்", nav_hospitals: "அருகிலுள்ள மருத்துவமனைகள்",
-            nav_first_aid: "முதலுதவி", nav_health_hub_mobile: "மையம்", nav_hospitals_mobile: "மருத்துவமனைகள்",
-            nav_first_aid_mobile: "முதலுதவி", welcome_title: "உங்கள் AI சுகாதார உதவியாளர்",
-            welcome_subtitle: "மைக்ரோஃபோனைத் தட்டி உங்கள் உடல்நலம் பற்றி கேளுங்கள்.", status_tap_to_speak: "பேச தட்டவும் அல்லது செய்தி தட்டச்சு செய்யவும்",
-            status_listening: "கேட்கிறது...", status_thinking: "சிந்திக்கிறது...", status_error: "பிழை", hub_title: "சுகாதார மையம்",
-            hub_reco_title: "பரிந்துரைகள்:", hub_reco_text: "சமச்சீர் உணவு உண்ணுங்கள், தினமும் 30 நிமிடங்கள் உடற்பயிற்சி செய்யுங்கள், 7-8 மணிநேரம் தூங்குங்கள்.",
-            hub_sol_title: "தீர்வுகள்:", hub_sol_text: "பொதுவான தலைவலிக்கு, நீரேற்றத்துடன் இருங்கள் மற்றும் ஓய்வெடுங்கள். மன அழுத்தத்திற்கு, ஆழ்ந்த சுவாசம் அல்லது தியானம் செய்யுங்கள்.",
-            hub_sugg_title: "ஆலோசனைகள்:", hub_sugg_text: "உங்கள் ஆரோக்கியத்தைக் கண்காணிக்கவும் சாத்தியமான சிக்கல்களைத் தடுக்கவும் வருடாந்திர சுகாதார பரிசோதனைகளைக் கவனியுங்கள்.",
-            hospitals_title: "அருகிலுள்ள மருத்துவமனைகளைக் கண்டறியவும்", hospitals_button: "எனது இருப்பிடத்தைப் பயன்படுத்தி தேடு",
-            first_aid_title: "அவசர முதலுதவி", first_aid_cuts_title: "வெட்டுக்காயங்கள்",
-            first_aid_cuts_text: "1. அழுத்தம் கொடுத்து இரத்தப்போக்கை நிறுத்தவும். 2. காயத்தை தண்ணீரால் சுத்தம் செய்யவும். 3. கிருமி நாசினியைப் பூசி கட்டால் மூடவும்.",
-            first_aid_burns_title: "சிறு தீக்காயங்கள்", first_aid_burns_text: "1. தீக்காயத்தை 10-15 நிமிடங்கள் குளிர் நீரில் குளிரூட்டவும். 2. ஐஸ் பயன்படுத்த வேண்டாம். 3. சுத்தமான துணியால் மெதுவாக மூடவும்.",
-            footer_powered_by: "சஞ்சய்துனால் இயக்கப்படுகிறது"
+            nav_symptom_checker: "அறிகுறி சரிபார்ப்பு", nav_symptom_checker_mobile: "சரிபார்ப்பு", nav_health_hub: "சுகாதார மையம்", nav_health_hub_mobile: "மையம்", nav_hospitals: "அருகிலுள்ள மருத்துவமனைகள்", nav_hospitals_mobile: "மருத்துவமனைகள்", nav_first_aid: "முதலுதவி", nav_first_aid_mobile: "முதலுதவி", welcome_title: "உங்கள் AI சுகாதார உதவியாளர்", welcome_subtitle: "மைக்ரோஃபோனைத் தட்டி கேளுங்கள்.", status_tap_to_speak: "பேச தட்டவும் அல்லது தட்டச்சு செய்யவும்", status_listening: "கேட்கிறது...", status_thinking: "சிந்திக்கிறது...", hub_title: "சுகாதார மையம்", hospitals_title: "அருகிலுள்ள மருத்துவமனைகள்", hospitals_button: "இருப்பிடத்தைப் பயன்படுத்தி தேடு", hospitals_searching: "தேடுகிறது...", hospitals_none_found: "அருகில் மருத்துவமனைகள் இல்லை.", hospitals_error: "தரவைப் பெற முடியவில்லை.", hospitals_denied: "இருப்பிட அணுகல் மறுக்கப்பட்டது.", first_aid_title: "அவசர முதலுதவி", first_aid_cuts_title: "வெட்டுக்காயங்கள்", first_aid_burns_title: "சிறு தீக்காயங்கள்", first_aid_sprains_title: "சுளுக்கு", first_aid_insects_title: "பூச்சி கடிகள்", first_aid_cuts_text: "1. அழுத்தி இரத்தப்போக்கை நிறுத்தவும். 2. காயத்தை தண்ணீரால் சுத்தம் செய்யவும். 3. கிருமி நாசினி தடவி கட்டால் மூடவும்.", first_aid_burns_text: "1. தீக்காயத்தை 10+ நிமிடங்கள் குளிர் நீரில் குளிரூட்டவும். 2. ஐஸ் பயன்படுத்த வேண்டாம். 3. மெதுவாக கட்டால் மூடவும்.", first_aid_sprains_text: "R.I.C.E முறையைப் பின்பற்றவும்: ஓய்வு, ஐஸ் ஒத்தடம், கட்டுப் போட்டு அழுத்துதல், மற்றும் பகுதியை உயர்த்தி வைத்தல்.", first_aid_insects_text: "1. கொடுக்கிருந்தால் அதை அகற்றவும். 2. கடிபட்ட இடத்தை சோப்பு மற்றும் தண்ணீரால் கழுவவும். 3. குளிர் ஒத்தடம் கொடுக்கவும்.", footer_powered_by: "சஞ்சய்துனால் இயக்கப்படுகிறது", hub_tip_1: "<strong>நீரேற்றத்துடன் இருங்கள்:</strong> ஒரு நாளைக்கு 8 கிளாஸ் தண்ணீர் குடிக்கவும்.", hub_tip_2: "<strong>சமச்சீர் உணவு:</strong> பழங்கள், காய்கறிகள், புரதங்கள் மற்றும் தானியங்களைச் சேர்க்கவும்.", hub_tip_3: "<strong>வழக்கமான உடற்பயிற்சி:</strong> தினமும் 30 நிமிடங்கள் உடற்பயிற்சி செய்யுங்கள்.", hub_tip_4: "<strong>தரமான தூக்கம்:</strong> প্রতি രാത്രി 7-9 గంటలు నిద్రపోవాలని నిర్ధారించుకోండి.", hub_tip_5: "<strong>மன அழுத்தத்தை நிர்வகிக்கவும்:</strong> தளர்வு நுட்பங்களைப் பயிற்சி செய்யுங்கள்.", hub_tip_6: "<strong>நல்ல சுகாதாரம்:</strong> உங்கள் கைகளை தவறாமல் கழுவவும்.", hub_tip_7: "<strong>திரை நேரத்தைக் குறைக்கவும்:</strong> திரைகளில் இருந்து வழக்கமான இடைவெளி எடுக்கவும்.", hub_tip_8: "<strong>வழக்கமான பரிசோதனைகள்:</strong> வழக்கமான சுகாதார பரிசோதனைகளுக்கு மருத்துவரை அணுகவும்."
+        },
+        te: {
+            nav_symptom_checker: "లక్షణాల తనిఖీ", nav_symptom_checker_mobile: "తనిఖీ", nav_health_hub: "ఆరోగ్య కేంద్రం", nav_health_hub_mobile: "కేంద్రం", nav_hospitals: "సమీప ఆసుపత్రులు", nav_hospitals_mobile: "ఆసుపత్రులు", nav_first_aid: "ప్రథమ చికిత్స", nav_first_aid_mobile: "చికిత్స", welcome_title: "మీ AI ఆరోగ్య సహచరుడు", welcome_subtitle: "మైక్రోఫోన్‌పై నొక్కి అడగండి.", status_tap_to_speak: "మాట్లాడటానికి నొక్కండి లేదా టైప్ చేయండి", status_listening: "వింటోంది...", status_thinking: "ఆలోచిస్తోంది...", hub_title: "ఆరోగ్య కేంద్రం", hospitals_title: "సమీప ఆసుపత్రులు", hospitals_button: "స్థానాన్ని ఉపయోగించి శోధించండి", hospitals_searching: "శోధిస్తోంది...", hospitals_none_found: "సమీపంలో ఆసుపత్రులు లేవు.", hospitals_error: "డేటాను పొందడం సాధ్యం కాలేదు.", hospitals_denied: "స్థాన ప్రాప్యత నిరాకరించబడింది.", first_aid_title: "అత్యవసర ప్రథమ చికిత్స", first_aid_cuts_title: "కోతలు & గాయాలు", first_aid_burns_title: "చిన్న కాలిన గాయాలు", first_aid_sprains_title: "బెణుకులు", first_aid_insects_title: "కీటకాల కాటు", first_aid_cuts_text: "1. ఒత్తిడితో రక్తస్రావాన్ని ఆపండి. 2. గాయాన్ని నీటితో శుభ్రం చేయండి. 3. యాంటిసెప్టిక్ పూసి, కట్టుతో కప్పండి.", first_aid_burns_text: "1. కాలిన గాయాన్ని 10+ నిమిషాలు చల్లటి నీటి కింద ఉంచండి. 2. ఐస్ ఉపయోగించవద్దు. 3. వదులుగా కట్టుతో కప్పండి.", first_aid_sprains_text: "R.I.C.E పద్ధతిని అనుసరించండి: విశ్రాంతి, ఐస్, కట్టు, మరియు భాగాన్ని పైకి ఎత్తడం.", first_aid_insects_text: "1. ముల్లు ఉంటే దాన్ని తొలగించండి. 2. ఆ ప్రదేశాన్ని సబ్బు, నీటితో కడగాలి. 3. చల్లని కంప్రెస్ వర్తించండి.", footer_powered_by: "సంజయ్‌తున్ ద్వారా ఆధారితం", hub_tip_1: "<strong>హైడ్రేట్‌గా ఉండండి:</strong> రోజుకు 8 గ్లాసుల నీరు త్రాగాలి.", hub_tip_2: "<strong>సమతుల్య ఆహారం:</strong> పండ్లు, కూరగాయలు, ప్రోటీన్లు మరియు ధాన్యాలు చేర్చండి.", hub_tip_3: "<strong>క్రమం తప్పని వ్యాయామం:</strong> రోజుకు 30 నిమిషాలు వ్యాయామం చేయండి.", hub_tip_4: "<strong>నాణ్యమైన నిద్ర:</strong> రాత్రి 7-9 గంటలు నిద్రపోండి.", hub_tip_5: "<strong>ఒత్తిడిని నిర్వహించండి:</strong> విశ్రాంతి పద్ధతులను పాటించండి.", hub_tip_6: "<strong>మంచి పరిశుభ్రత:</strong> మీ చేతులను క్రమం తప్పకుండా కడుక్కోండి.", hub_tip_7: "<strong>స్క్రీన్ సమయాన్ని పరిమితం చేయండి:</strong> స్క్రీన్‌ల నుండి విరామం తీసుకోండి.", hub_tip_8: "<strong>క్రమం తప్పని తనిఖీలు:</strong> సాధారణ తనిఖీల కోసం వైద్యుడిని సందర్శించండి."
+        },
+        hi: {
+            nav_symptom_checker: "लक्षण परीक्षक", nav_symptom_checker_mobile: "परीक्षक", nav_health_hub: "स्वास्थ्य केंद्र", nav_health_hub_mobile: "केंद्र", nav_hospitals: "आस-पास के अस्पताल", nav_hospitals_mobile: "अस्पताल", nav_first_aid: "प्राथमिक चिकित्सा", nav_first_aid_mobile: "चिकित्सा", welcome_title: "आपका AI स्वास्थ्य साथी", welcome_subtitle: "माइक्रोफ़ोन पर टैप करें और पूछें।", status_tap_to_speak: "बोलने के लिए टैप करें या टाइप करें", status_listening: "सुन रहा है...", status_thinking: "सोच रहा है...", hub_title: "स्वास्थ्य केंद्र", hospitals_title: "आस-पास के अस्पताल", hospitals_button: "स्थान का उपयोग करके खोजें", hospitals_searching: "खोज रहा है...", hospitals_none_found: "आस-पास कोई अस्पताल नहीं मिला।", hospitals_error: "डेटा प्राप्त नहीं किया जा सका।", hospitals_denied: "स्थान पहुंच अस्वीकृत।", first_aid_title: "आपातकालीन प्राथमिक चिकित्सा", first_aid_cuts_title: "कट और खरोंच", first_aid_burns_title: "मामूली जलन", first_aid_sprains_title: "मोच", first_aid_insects_title: "कीड़े का काटना", first_aid_cuts_text: "1. दबाव डालकर रक्तस्राव रोकें। 2. घाव को पानी से साफ करें। 3. एंटीसेप्टिक लगाएं और पट्टी से ढक दें।", first_aid_burns_text: "1. जले हुए हिस्से को 10+ मिनट तक ठंडे पानी के नीचे ठंडा करें। 2. बर्फ का प्रयोग न करें। 3. पट्टी से ढीले ढंग से ढकें।", first_aid_sprains_text: "R.I.C.E का पालन करें: आराम, बर्फ, पट्टी से दबाव, और अंग को ऊपर उठाना।", first_aid_insects_text: "1. डंक मौजूद हो तो उसे हटा दें। 2. उस क्षेत्र को साबुन और पानी से धो लें। 3. ठंडा सेक लगाएं।", footer_powered_by: "संजयथुन द्वारा संचालित", hub_tip_1: "<strong>हाइड्रेटेड रहें:</strong> दिन में कम से कम 8 गिलास पानी पिएं।", hub_tip_2: "<strong>संतुलित आहार:</strong> फल, सब्जियां, प्रोटीन और अनाज शामिल करें।", hub_tip_3: "<strong>नियमित व्यायाम:</strong> रोज 30 मिनट व्यायाम करें।", hub_tip_4: "<strong>गुणवत्तापूर्ण नींद:</strong> रात में 7-9 घंटे की नींद सुनिश्चित करें।", hub_tip_5: "<strong>तनाव का प्रबंधन करें:</strong> विश्राम तकनीकों का अभ्यास करें।", hub_tip_6: "<strong>अच्छी स्वच्छता:</strong> अपने हाथों को नियमित रूप से धोएं।", hub_tip_7: "<strong>स्क्रीन समय सीमित करें:</strong> स्क्रीन से नियमित ब्रेक लें।", hub_tip_8: "<strong>नियमित जांच:</strong> नियमित जांच के लिए डॉक्टर के पास जाएं।"
         }
     };
     
-    // --- THEME & LANGUAGE SWITCHERS ---
+    // --- UI SETUP & EVENT LISTENERS ---
     const themeButtons = document.querySelectorAll('.theme-btn');
     const setTheme = (theme) => {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('meditalk_theme', theme);
-        currentTheme = theme;
+        document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('meditalk_theme', theme);
         themeButtons.forEach(btn => { btn.style.borderColor = btn.dataset.theme === theme ? 'var(--accent-color)' : 'var(--border-color)'; });
     };
     themeButtons.forEach(button => button.addEventListener('click', () => setTheme(button.dataset.theme)));
 
-    const langEnBtn = document.getElementById('lang-en-btn');
-    const langTaBtn = document.getElementById('lang-ta-btn');
+    const langButtons = document.querySelectorAll('.lang-btn');
     const setLanguage = (lang) => {
         currentLang = lang; localStorage.setItem('meditalk_lang', lang);
-        document.querySelectorAll('[data-translate-key]').forEach(el => {
-            const key = el.dataset.translateKey;
-            el.innerText = translations[lang][key] || el.innerText;
-        });
-        if (recognition) { recognition.lang = lang === 'ta' ? 'ta-IN' : 'en-US'; }
-        langEnBtn.style.backgroundColor = lang === 'en' ? 'var(--accent-color)' : 'transparent';
-        langTaBtn.style.backgroundColor = lang === 'ta' ? 'var(--accent-color)' : 'transparent';
-        chatInput.placeholder = lang === 'ta' ? 'உங்கள் அறிகுறிகளை இங்கே தட்டச்சு செய்க...' : 'Type your symptoms here...';
+        document.querySelectorAll('[data-translate-key]').forEach(el => { el.innerHTML = translations[lang][el.dataset.translateKey] || ''; });
+        if (recognition) { recognition.lang = {en: 'en-US', ta: 'ta-IN', te: 'te-IN', hi: 'hi-IN'}[lang]; }
+        langButtons.forEach(btn => { btn.style.backgroundColor = btn.dataset.lang === lang ? 'var(--accent-color)' : 'transparent'; });
+        chatInput.placeholder = {en: 'Type your symptoms here...', ta: 'உங்கள் அறிகுறிகளை இங்கே தட்டச்சு செய்க...', te: 'మీ లక్షణాలను ఇక్కడ టైప్ చేయండి...', hi: 'अपने लक्षण यहां टाइप करें...'}[lang];
     };
-    langEnBtn.addEventListener('click', () => setLanguage('en'));
-    langTaBtn.addEventListener('click', () => setLanguage('ta'));
+    langButtons.forEach(button => button.addEventListener('click', () => setLanguage(button.dataset.lang)));
 
-    // --- TEXT & VOICE INPUT LOGIC ---
+    const updateVoiceButton = () => {
+        if (isVoiceEnabled) { voiceIcon.className = 'fas fa-volume-up'; voiceToggleBtn.style.backgroundColor = 'var(--accent-color)'; } 
+        else { voiceIcon.className = 'fas fa-volume-mute'; voiceToggleBtn.style.backgroundColor = 'transparent'; }
+    };
+    voiceToggleBtn.addEventListener('click', () => {
+        isVoiceEnabled = !isVoiceEnabled; localStorage.setItem('meditalk_voice', isVoiceEnabled);
+        updateVoiceButton();
+        if (!isVoiceEnabled) { synth.cancel(); }
+    });
+
     const handleTextInput = () => {
         const command = chatInput.value.trim();
-        if (command) {
-            welcomeMessage.style.display = 'none';
-            addUserMessage(command); getAiResponse(command);
-            chatInput.value = '';
-        }
+        if (command) { welcomeMessage.style.display = 'none'; addUserMessage(command); getAiResponse(command); chatInput.value = ''; }
     };
     sendBtn.addEventListener('click', handleTextInput);
     chatInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') { handleTextInput(); }});
@@ -274,47 +235,52 @@ document.addEventListener('DOMContentLoaded', () => {
     if (recognition) {
         recognition.onstart = () => { isListening = true; micButton.classList.add('pulse'); statusText.innerText = translations[currentLang].status_listening; };
         recognition.onend = () => { isListening = false; micButton.classList.remove('pulse'); statusText.innerText = translations[currentLang].status_tap_to_speak; };
-        recognition.onresult = (event) => {
-            const command = event.results[0][0].transcript;
-            welcomeMessage.style.display = 'none';
-            addUserMessage(command); getAiResponse(command);
-        };
+        recognition.onresult = (event) => { const command = event.results[0][0].transcript; welcomeMessage.style.display = 'none'; addUserMessage(command); getAiResponse(command); };
     }
     
     // --- CHAT UI FUNCTIONS ---
     const addUserMessage = (text) => {
         const messageHtml = `<div class="flex justify-end"><div class="bg-[var(--accent-color)] text-white p-3 rounded-lg max-w-xs md:max-w-md">${text}</div></div>`;
-        chatArea.insertAdjacentHTML('beforeend', messageHtml);
-        chatArea.scrollTop = chatArea.scrollHeight;
+        chatArea.insertAdjacentHTML('beforeend', messageHtml); chatArea.scrollTop = chatArea.scrollHeight;
     };
     const addAiMessage = (htmlContent, imageUrl) => {
-        const skeleton = document.getElementById('loading-skeleton');
-        if (skeleton) skeleton.remove();
+        document.getElementById('loading-skeleton')?.remove();
         const imageHtml = imageUrl ? `<img src="${imageUrl}" alt="Relevant Image" class="w-full h-40 object-cover">` : '';
-        const messageHtml = `
-            <div class="flex justify-start">
-                <div class="glass-card rounded-lg max-w-xs md:max-w-md overflow-hidden">
-                    ${imageHtml}
-                    <div class="p-3 ai-response-content">${htmlContent}</div>
-                </div>
-            </div>`;
-        chatArea.insertAdjacentHTML('beforeend', messageHtml);
-        chatArea.scrollTop = chatArea.scrollHeight;
+        const cleanHtmlContent = htmlContent.replace(/\*/g, ''); // Remove all asterisks
+        const messageHtml = `<div class="flex justify-start"><div class="glass-card rounded-lg max-w-xs md:max-w-md overflow-hidden">${imageHtml}<div class="p-3 ai-response-content">${cleanHtmlContent}</div></div></div>`;
+        chatArea.insertAdjacentHTML('beforeend', messageHtml); chatArea.scrollTop = chatArea.scrollHeight;
     };
      const showLoadingSkeleton = () => {
-        const skeletonHtml = `<div id="loading-skeleton" class="flex justify-start"><div class="glass-card p-3 rounded-lg max-w-xs md:max-w-md w-full animate-pulse space-y-2"><div class="bg-[var(--text-secondary)]/30 h-40 rounded-md"></div><div class="p-3 space-y-2"><div class="bg-[var(--text-secondary)]/30 h-4 rounded-md"></div><div class="bg-[var(--text-secondary)]/30 h-4 w-5/6 rounded-md"></div></div></div></div>`;
-        chatArea.insertAdjacentHTML('beforeend', skeletonHtml);
-        chatArea.scrollTop = chatArea.scrollHeight;
+        const skeletonHtml = `<div id="loading-skeleton" class="flex justify-start"><div class="glass-card p-3 rounded-lg max-w-xs md:max-w-md w-full animate-pulse"><div class="bg-[var(--text-secondary)]/30 h-40 rounded-t-lg"></div><div class="p-3 space-y-2"><div class="bg-[var(--text-secondary)]/30 h-4 rounded-md"></div><div class="bg-[var(--text-secondary)]/30 h-4 w-5/6 rounded-md"></div></div></div></div>`;
+        chatArea.insertAdjacentHTML('beforeend', skeletonHtml); chatArea.scrollTop = chatArea.scrollHeight;
     };
 
     // --- TEXT-TO-SPEECH (TTS) FUNCTION ---
     const synth = window.speechSynthesis;
-    function speak(text) {
+    function speak(text, lang) {
+        if (!isVoiceEnabled || !text) return;
         if (synth.speaking) { synth.cancel(); }
-        const utterance = new SpeechSynthesisUtterance(text);
+        
+        const cleanText = text.replace(/\*/g, ''); // Clean asterisks before speaking
+        const utterance = new SpeechSynthesisUtterance(cleanText);
         const voices = synth.getVoices();
-        // Always use an English voice for the special Tamil transliteration feature
-        utterance.voice = voices.find(voice => voice.lang === 'en-US' || voice.lang === 'en-GB');
+        let voiceToUse = null;
+
+        if (lang === 'ta') {
+            // Per your request, use an English voice for the special transliterated Tamil text
+            voiceToUse = voices.find(v => v.lang === 'en-US' || v.lang === 'en-GB');
+        } else {
+            // For other languages, try to find the native voice
+            const langCode = { en: 'en-US', te: 'te-IN', hi: 'hi-IN' }[lang];
+            voiceToUse = voices.find(v => v.lang === langCode);
+        }
+
+        // If a specific voice isn't found, fall back to the first available English voice
+        if (!voiceToUse) {
+            voiceToUse = voices.find(v => v.lang.startsWith('en'));
+        }
+        
+        utterance.voice = voiceToUse;
         synth.speak(utterance);
     }
 
@@ -323,80 +289,54 @@ document.addEventListener('DOMContentLoaded', () => {
         showLoadingSkeleton();
         statusText.innerText = translations[currentLang].status_thinking;
         try {
-            const detectedLang = await detectLanguage(prompt);
             const [aiData, imageUrl] = await Promise.all([
-                getAiContent(prompt, detectedLang),
+                getAiUnifiedResponse(prompt),
                 getImageForQuery(prompt)
             ]);
             
-            // Format the text with headings
             const formattedText = aiData.displayText.replace(/### (.*?)\n/g, '<h3>$1</h3>');
             
             addAiMessage(formattedText, imageUrl);
-            speak(aiData.speechText);
+            speak(aiData.speechText, aiData.detectedLang);
             
         } catch (error) {
             console.error(error);
-            addAiMessage("An error occurred. Please check your API keys and try again.");
+            addAiMessage("An error occurred. Please check API keys or rate limits.");
         } finally {
              statusText.innerText = translations[currentLang].status_tap_to_speak;
         }
     }
 
-    // --- HELPER AI FUNCTIONS ---
-    async function detectLanguage(text) {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: `Detect the language of the following text. Respond with only the two-letter ISO 639-1 code (e.g., en, ta, hi). Text: "${text}"` }] }] })
-        });
-        const data = await response.json();
-        const langCode = data.candidates[0].content.parts[0].text.trim().toLowerCase();
-        return langCode.includes('ta') ? 'ta' : 'en';
-    }
-    
-    async function getAiContent(prompt, lang) {
-        let smartPrompt;
-        if (lang === 'ta') {
-            smartPrompt = `USER QUERY (in Tamil): "${prompt}"
-            TASK: Provide a health response based on the query.
-            RULES:
-            1. Structure the response with three Markdown headings: "### பரிந்துரை" (Recommendation), "### ஆலோசனை" (Suggestion), and "### தீர்வுகள்" (Solutions).
-            2. Write the entire response in Tamil script. Include a disclaimer in Tamil.
-            3. After the response, add a separator: "---"
-            4. Provide a phonetically accurate transliteration of the complete Tamil response in roman (English) characters for text-to-speech.`;
-        } else {
-            smartPrompt = `USER QUERY: "${prompt}"
-            TASK: Provide a health response based on the query.
-            RULES:
-            1. Structure the response with three Markdown headings: "### Recommendation", "### Suggestion", and "### Solutions".
-            2. Write the entire response in English. Include a disclaimer in English.`;
-        }
+    // --- UNIFIED AI FUNCTION (1 API CALL) ---
+    async function getAiUnifiedResponse(prompt) {
+        const megaPrompt = `
+            ANALYZE the user's query: "${prompt}"
+            STEP 1: Detect the primary language (en, ta, te, or hi).
+            STEP 2: Generate a health response in the detected language, structured with three headings: Recommendation, Suggestion, and Solutions (use native language spelling for headings). The response text MUST NOT contain any Markdown asterisks. Include a disclaimer.
+            STEP 3: Generate the text for speech.
+              - If Tamil ('ta'), provide a phonetically accurate roman character transliteration of the Tamil response.
+              - For all other languages, the speech text is the SAME as the display text.
+            STEP 4: Format your final output strictly as a JSON object:
+            {"detectedLang": "...", "displayText": "...", "speechText": "..."}
+        `;
 
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: smartPrompt }] }] })
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: megaPrompt }] }] })
         });
+        
         if (!response.ok) throw new Error("Gemini API request failed");
         const data = await response.json();
-        const fullText = data.candidates[0].content.parts[0].text;
+        const rawText = data.candidates[0].content.parts[0].text;
         
-        if (lang === 'ta') {
-            const parts = fullText.split('---');
-            return { displayText: parts[0].trim(), speechText: parts[1] ? parts[1].trim() : parts[0].trim() };
-        } else {
-            return { displayText: fullText.trim(), speechText: fullText.trim() };
-        }
+        const jsonString = rawText.replace(/```json\n|```/g, '').trim();
+        return JSON.parse(jsonString);
     }
-
+    
+    // --- GOOGLE IMAGE SEARCH ---
     async function getImageForQuery(query) {
-        const queryGenPrompt = `Create a simple 2-3 word Google Image search query for the health topic: "${query}". Respond with only the search query.`;
-        const queryGenResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: queryGenPrompt }] }] })
-        });
-        const queryGenData = await queryGenResponse.json();
-        const imageSearchQuery = queryGenData.candidates[0].content.parts[0].text.trim();
-        const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_SEARCH_API_KEY}&cx=${GOOGLE_SEARCH_CX}&q=${encodeURIComponent(imageSearchQuery)}&searchType=image&num=1`;
+       const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_SEARCH_API_KEY}&cx=${GOOGLE_SEARCH_CX}&q=${encodeURIComponent(query + " health")}&searchType=image&num=1`;
         try {
             const searchResponse = await fetch(searchUrl);
             if (!searchResponse.ok) return null;
@@ -405,14 +345,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error("Image search failed:", error); return null; }
     }
     
-    // --- NEARBY HOSPITALS LOGIC ---
+    // --- NEARBY HOSPITALS ---
     findHospitalsBtn.addEventListener('click', () => {
-        hospitalsList.innerHTML = `<p class="text-center">${translations[currentLang].status_thinking}</p>`;
+        hospitalsList.innerHTML = `<p class="text-center">${translations[currentLang].hospitals_searching}</p>`;
         navigator.geolocation.getCurrentPosition(async (position) => {
             const { latitude, longitude } = position.coords;
             const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=5000&type=hospital&key=${GOOGLE_MAPS_API_KEY}`;
-            // NOTE: The direct API call below might be blocked by CORS in a browser. 
-            // A proxy server is the standard solution for production.
             try {
                 const response = await fetch(placesUrl);
                 const data = await response.json();
@@ -424,12 +362,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         hospitalEl.innerHTML = `<h3 class="font-bold text-lg">${place.name}</h3><p class="text-[var(--text-secondary)]">${place.vicinity}</p>`;
                         hospitalsList.appendChild(hospitalEl);
                     });
-                } else { hospitalsList.innerHTML = `<p class="text-center">No hospitals found nearby.</p>`; }
+                } else { hospitalsList.innerHTML = `<p class="text-center">${translations[currentLang].hospitals_none_found}</p>`; }
             } catch (error) {
-                 hospitalsList.innerHTML = `<p class="text-center text-red-400">Could not fetch hospital data. This may be due to a CORS policy error. Running this from a live server is recommended.</p>`;
+                 hospitalsList.innerHTML = `<p class="text-center text-red-400">${translations[currentLang].hospitals_error}</p>`;
             }
         }, () => {
-             hospitalsList.innerHTML = `<p class="text-center text-red-400">Location access denied.</p>`;
+             hospitalsList.innerHTML = `<p class="text-center text-red-400">${translations[currentLang].hospitals_denied}</p>`;
         });
     });
 
@@ -445,10 +383,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- APP INITIALIZATION ---
     setTheme(currentTheme);
     setLanguage(currentLang);
+    updateVoiceButton();
     showPage('symptom-checker');
 });
 
-// --- GLOBAL PAGE NAVIGATION FUNCTION ---
+// --- GLOBAL PAGE NAVIGATION ---
 const showPage = (pageId) => {
     document.querySelectorAll('.page-content').forEach(page => page.classList.add('hidden'));
     document.getElementById(pageId + '-page').classList.remove('hidden');
